@@ -3,9 +3,9 @@
 layout: home
 
 hero:
-  name: "wc course accompany"
-  text: "ithub spb. web components course accompany"
-  tagline: My great project tagline
+  name: "Web Components"
+  text: "course accompany"
+  tagline: IThub SPb
   actions:
     - theme: brand
       text: Markdown Examples

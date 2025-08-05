@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shadow DOM CSS</title>
+</head>
+
+<body>
+    <section class="entry"></section>
+    <script>
+        const sectionElement = document.querySelector('.entry')
+        const shadow = sectionElement.attachShadow({ mode: 'closed' })
+        shadow.innerHTML = `
+            <input name="email" type="email" placeholder="example@test.com" autocomplete="off" required>
+            <p>Enter your email</p>`
+    </script>
+</body>
+
+</html>
