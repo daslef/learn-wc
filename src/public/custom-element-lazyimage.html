@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Elements</title>
+    <style>
+        body {
+            height: 130px;
+        }
+
+        img {
+            height: 100%;
+        }
+
+        .thumbnail {
+            filter: blur(2px);
+        }
+    </style>
+</head>
+
+<body>
+    <img is="lazy-img" class="thumbnail" thumbnail="./lazy-load-thumbnail.jpg" original="./lazy-load-original.jpg">
+    <script>
+        customElements.define('lazy-img', class extends HTMLImageElement {
+            constructor(props = {}) {
+                super();
+                console.log(props)
+                const originalSrc = this.getAttribute('original') || props.original
+                const thumbnailSrc = this.getAttribute('thumbnail') || props.thumbnail
+                this.src = thumbnailSrc
+                this.loadOriginal(originalSrc).then(originalImage => {
+                    this.src = originalImage.src
+                    this.classList.remove('thumbnail')
+                })
+            }
+
+            loadOriginal(originalSrc) {
+                const originalImage = new Image()
+                return new Promise((resolve, reject) => {
+                    originalImage.onload = () => resolve(originalImage);
+                    originalImage.onerror = reject;
+                    setTimeout(() => {
+                        originalImage.src = originalSrc;
+                    }, 2_000)
+                })
+            }
+        }, { extends: 'img' });
+    </script>
+</body>
+
+</html>

@@ -75,7 +75,10 @@
 Наследуясь от нативных элементов мы даем пользователю возможность взаимодействовать с чем-то уже знакомым ему. Также - снижаем сложность разработки, ведь нам не требуется переизобретать то, что уже работает - свойства, методы, синхронизацию с HTML-аттрибутами. С точки зрения доступности (a11y) такие элементы - также отличная точка старта для типовых задач.
 
 #### FancyButton
+
 Допустим, мы хотим создать свою версию `<button>`, значит наследоваться будем от `HTMLButtonElement`.
+
+###### JS
 
 ```js
 class FancyButton extends HTMLButtonElement {
@@ -98,66 +101,113 @@ class FancyButton extends HTMLButtonElement {
 customElements.define('fancy-button', FancyButton, { extends: 'button' });
 ```
 
+Здесь вызовом `super()` мы получаем все свойства и методы `<button>`, нам не нужно заботиться о состоянии *disabled*, методе *click()*, слушателях событий и так далее. От себя мы добавили только функционал анимации. Его можно было бы добавить и извне, получив обычную кнопку и обернув ее дополнительным функционалом, и это было бы равноценной альтернативой, но без инкапсуляции. Аналогично, если бы анимация решалась только CSS-стилями, можно было бы ограничиться добавлением к элементу CSS-класса, и это также можно было бы сделать без создания отдельного пользовательского встроенного элемента. Всё решается командой разработки.
+
+При регистрации элемента мы указываем название тега, название класса с реализацией и третий аргумент, определяющий имя тега, который мы расширяем. Третий аргумент важен потому, что многие HTML-теги шерят между собой общий DOM-интерфейс: например, `<section>`, `<address>` и `<em>` используют `HTMLElement`, а `<q>` и `<blockquote>` оба являются HTMLQuoteElement. Уточняя `{extends: 'blockquote'}` мы даем браузеру знать, что мы регистрируем надстройку над `<blockquote>`, а не над `<q>`.
+
+###### Результат
+
 <iframe src="/custom-element-button.html"  />
 
-Registering customized built-in elements is done the same way. However, calling define requires a third argument that specifies an Object that sets the extends property to the tag name of the element that you’re extending from.
-
-To use the customized built-in element in a template, the element must use the required is attribute set to the name of the element in the CustomElementRegistry. This is mainly so that browsers can parse the custom element from HTML source.
-
-Customized built-in elements can be created dynamically with document.createElement by adding a second argument when call-ing the function.
-
-Notice that the call to define() changes slightly when extending a native element. The required third parameter tells the browser which tag you're extending. This is necessary because many HTML tags share the same DOM interface. `<section>`, `<address>`, and `<em>` (among others) all share HTMLElement; both `<q>` and `<blockquote>` share HTMLQuoteElement; etc… Specifying {extends: 'blockquote'} lets the browser know you're creating a souped-up `<blockquote>` instead of a `<q>`.
-
-Note: Extending HTMLButtonElement endows our fancy button with all the DOM properties/methods of `<button>`. That checks off a bunch of stuff we don't have to implement ourselves: disabled property, click() method, keydown listeners, tabindex management.
-
-Consumers of a customized built-in element can use it in several ways. They can declare it by adding the is="" attribute on the native tag:
+Теперь мы можем использовать этот элемент декларативно, в HTML
 
 ```html
 <button is="fancy-button" disabled>Fancy button!</button>
 ```
 
-Сreate an instance in JavaScript:
+...а также создавать императивно в JS
 
 ```js
-let button = document.createElement('button', {is: 'fancy-button'});
+const button = document.createElement('button', { is: 'fancy-button' });
 button.textContent = 'Fancy button!';
 button.disabled = true;
 document.body.appendChild(button);
-```
 
-or use the new operator:
-
-```js
-let button = new FancyButton();
-button.textContent = 'Fancy button!';
-button.disabled = true;
+const button2 = new FancyButton();
+button2.textContent = 'Fancy button!';
+document.body.appendChild(button2);
 ```
 
 #### Lazy Image
 
-```js
-customElements.define('bigger-img', class extends Image {
-  // Give img default size if users don't specify.
-  constructor(width=50, height=50) {
-    super(width * 10, height * 10);
-  }
-}, {extends: 'img'});
+Закрепим навыки реализацией ленивой загрузки изображений, когда в случае медленного соединения мы первично загружаем заблёренную версию в низком разрешении и заменяем ее на оригинал по завершению его загрузки.
+
+###### CSS
+
+Добавляем блёр к низкокачественному изображению
+
+```css
+body { height: 130px; }
+
+img { height: 100%; }
+
+.thumbnail { filter: blur(2px); }
 ```
 
-Users declare this component as:
+###### JS
+
+Определяем элемент, давая возможность задать ссылки на тамбнэйл и оригинал изображения как через HTML-атрибуты, так и программно через параметры конструктора
+
+```js
+customElements.define('lazy-img', class extends HTMLImageElement {
+    constructor(props = {}) {
+        super();
+        const originalSrc = this.getAttribute('original') || props.original
+        const thumbnailSrc = this.getAttribute('thumbnail') || props.thumbnail
+        this.src = thumbnailSrc
+        this.loadOriginal(originalSrc).then(originalImage => {
+            this.src = originalImage.src
+            this.classList.remove('thumbnail')
+        })
+    }
+
+    loadOriginal(originalSrc) {
+        const originalImage = new Image()
+        return new Promise((resolve, reject) => {
+            originalImage.onload = () => resolve(originalImage);
+            originalImage.onerror = reject;
+            setTimeout(() => {
+                originalImage.src = originalSrc;
+            }, 2_000)
+        })
+    }
+}, { extends: 'img' });
+```
+
+###### Результат
+
+Используем компонент в HTML
 
 ```html
-<img is="bigger-img" width="15" height="20">
+    <img is="lazy-img" class="thumbnail" thumbnail="./lazy-load-thumbnail.jpg" original="./lazy-load-original.jpg">
 ```
 
-or create an instance in JavaScript:
+...либо в JS
 
 ```js
-const BiggerImage = customElements.get('bigger-img');
-const image = new BiggerImage(15, 20); // pass constructor values like so.
-console.assert(image.width === 150);
-console.assert(image.height === 200);
+const LazyImage = customElements.get('lazy-img');
+const image = new LazyImage({ thumbnail: "./lazy-load-thumbnail.jpg", original: "./lazy-load-original.jpg" });
+document.body.append(image)
 ```
 
-## Дополнительная информация
+<iframe id="lazyimage" src="/custom-element-lazyimage.html"  />
+<button onclick="document.querySelector('#lazyimage').contentDocument.location.reload(true);">Reload</button>
+
+## Автономные пользовательские элементы
+
+
+
+## Примечания
+
+####
+
+There is a catch, though—and it’s one that won’t really affect you until you get into more complex things. All the same, it’s good to bring this up now: customElements .define will throw an error if you’ve already defined a tag. This will definitely come up later when we use a newer JS feature called import, where we include our element anywhere we need to reference something in it.
+ 	For now, we can mimic this bad behavior by calling customElements.define twice in a row: customElements.define('my-custom-tag', class extends HTMLElement {}); customElements.define('my-custom-tag', class extends HTMLElement {});
+We get the following error: Failed to execute 'define' on 'CustomElementRegistry': this name has already been used with this registry
+Thankfully, this is easy enough to handle. We can determine if our custom element has already been defined by asking if customElements.get('my-custom-tag') returns something. By wrapping it in an if/then statement, we ensure that our element is defined only when we first call it:
+ if (!customElements.get('my-custom-tag')) { customElements.define('my-custom-tag', class extends HTMLElement {}); }
+
+####
+
+## Поддержка браузерами
 Полифилл https://github.com/webcomponents/polyfills/tree/master/packages/custom-elements
