@@ -18,13 +18,19 @@ export default defineConfig({
                 text: 'Лонгриды', items: [
                     {
                         text: "1. Введение", items: [
-                            { text: '1.1 О курсе', link: '/course' },
-                            { text: '1.2 Веб Компоненты', link: '/intro' },
-                            { text: '1.3 Custom Elements', link: '/custom-elements' },
-                            { text: '1.4 HTML Templates', link: '/template' },
-                            { text: '1.5 Shadow DOM', link: '/shadow-dom' }
+                            { text: '1.1 О курсе', link: '/chapter-one/course' },
+                            { text: '1.2 Веб Компоненты', link: '/chapter-one/intro' },
+                            { text: '1.3 Custom Elements', link: '/chapter-one/custom-elements' },
+                            { text: '1.4 Shadow DOM', link: '/chapter-one/shadow-dom' },
+                            { text: '1.5 HTML Templates', link: '/chapter-one/template' },
+                        ]
+                    },
+                    {
+                        text: "X. Дополнительные главы", items: [
+                            { text: 'X.1 Shadow DOM', link: '/additional-chapters/shadow-dom' },
                         ]
                     }
+
                 ]
             },
         ],

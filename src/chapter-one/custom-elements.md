@@ -6,7 +6,7 @@
 
 Когда мы добавляем элемент на страницу, нас редко волнует, как он работает внутри, но сейчас придется разобраться. Вспомним концепцию наследования, основу объектно-ориентированного программирования. Почти все элементы, которые мы размещаем в HTML/DOM, наследуются от класса `HTMLElement`. Так, элементы `<span>`, `<div>` и `<button>` создаются через `HTMLSpanElement`, `HTMLDivElement` и `HTMLButtonElement` соответственно. Все они наследуются от `HTMLElement`.
 
-![htmlelement inheritance model](./assets/html-element-inheritance.jpg)
+![htmlelement inheritance model](../assets/html-element-inheritance.jpg)
 
 Если выполнить в браузере команду `document.createElement('div').constructor`, консоль вернет `ƒ HTMLDivElement() { [native code] }`.
 
@@ -179,14 +179,14 @@ customElements.define('lazy-img', class extends HTMLImageElement {
 Используем компонент в HTML
 
 ```html
-    <img is="lazy-img" class="thumbnail" thumbnail="./lazy-load-thumbnail.jpg" original="./lazy-load-original.jpg">
+    <img is="lazy-img" class="thumbnail" thumbnail="../lazy-load-thumbnail.jpg" original="../lazy-load-original.jpg">
 ```
 
 ...либо в JS
 
 ```js
 const LazyImage = customElements.get('lazy-img');
-const image = new LazyImage({ thumbnail: "./lazy-load-thumbnail.jpg", original: "./lazy-load-original.jpg" });
+const image = new LazyImage({ thumbnail: "../lazy-load-thumbnail.jpg", original: "../lazy-load-original.jpg" });
 document.body.append(image)
 ```
 
