@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Templates</title>
+</head>
+
+<body>
+    <div id="elem">Click me</div>
+    <script>
+        elem.addEventListener("click", function () {
+            elem.attachShadow({ mode: 'open' });
+
+            const styles = document.createElement('style')
+            const message = document.createElement('p')
+            message.setAttribute('id', 'message')
+            message.textContent = 'Hello Shadow!'
+            styles.textContent = 'p { font-weight: bold; }'
+
+            elem.shadowRoot.innerHTML = styles.innerHTML + message.innerHTML
+        })
+    </script>
+</body>
+
+</html>

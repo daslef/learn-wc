@@ -23,6 +23,7 @@ export default defineConfig({
                             { text: '1.3 Custom Elements', link: '/chapter-one/custom-elements' },
                             { text: '1.4 Shadow DOM', link: '/chapter-one/shadow-dom' },
                             { text: '1.5 HTML Templates', link: '/chapter-one/template' },
+                            { text: '1.6 Slots API', link: '/chapter-one/slots' },
                         ]
                     },
                     {

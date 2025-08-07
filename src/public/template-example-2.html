@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Templates</title>
+</head>
+
+<body>
+    <template id="tmpl2">
+        <style>
+            p {
+                font-weight: bold;
+            }
+        </style>
+        <p id="message"></p>
+    </template>
+    <div id="elem">Click me</div>
+    <script>
+        elem.addEventListener("click", function () {
+            elem.attachShadow({ mode: 'open' });
+            elem.shadowRoot.append(tmpl2.content.cloneNode(true));
+            elem.shadowRoot.querySelector('#message').innerHTML = "Hello Shadow!";
+        })
+    </script>
+</body>
+
+</html>

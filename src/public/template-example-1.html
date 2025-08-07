@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Templates</title>
+</head>
+
+<body>
+    <template id="tmpl">
+        <script>
+            document.querySelector('button').addEventListener('click', () => {
+                alert("Hello");
+            })
+        </script>
+        <button class="message">Hello, template!</button>
+    </template>
+    <script>
+        const elem = document.createElement('div');
+        elem.append(tmpl.content.cloneNode(true));
+        document.body.append(elem);
+    </script>
+</body>
+
+</html>

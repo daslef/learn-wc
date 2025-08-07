@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Templates</title>
+</head>
+
+<body>
+    <div id="host"></div>
+    <template id="sectionTemplate">
+        <h2>Header</h2>
+        <p>Text</p>
+        <template id="detailsTemplate">
+            <h3>Addition</h3>
+            <p>Details</p>
+        </template>
+    </template>
+    <script>
+        // узел с клонированным содержимым внешнего шаблона
+        const outer = sectionTemplate.content.cloneNode(true);
+        // записываем внутренний шаблон в переменную
+        const inner = outer.children.detailsTemplate;
+        // заменяем внутренний шаблон на его реальное содержимое
+        outer.removeChild(inner);
+        outer.appendChild(inner.content.cloneNode(true));
+
+        // прикрепляем к DOM
+        document.querySelector('#host').appendChild(outer);
+    </script>
+</body>
+
+</html>
