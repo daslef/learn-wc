@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autonomous Custom Elements</title>
+</head>
+
+<body>
+    <date-formatted date="22.10.2025" year="2-digit"></date-formatted>
+
+    <script>
+        class DateFormatted extends HTMLElement {
+            render() {
+                const [day, month, year] = this.getAttribute('date').split('.')
+                const time = new Date(+year, +month - 1, +day)
+
+                this.innerHTML = new Intl.DateTimeFormat("default", {
+                    day: this.getAttribute('day') || "numeric",
+                    month: this.getAttribute('month') || "long",
+                    year: this.getAttribute('year') || "numeric"
+                }).format(time);
+            }
+
+            connectedCallback() {
+                if (!this.rendered) {
+                    this.render();
+                    this.rendered = true;
+                }
+            }
+
+            static get observedAttributes() {
+                return ['date', 'year', 'month', 'day'];
+            }
+
+            attributeChangedCallback() {
+                this.render();
+            }
+        }
+
+        customElements.define("date-formatted", DateFormatted);
+    </script>
+
+</body>
+
+</html>

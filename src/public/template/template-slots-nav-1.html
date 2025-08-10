@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slots</title>
+</head>
+
+<body>
+    <template id="tmpl">
+        <style>
+            :host {
+                display: flex;
+                gap: 1.5rem;
+                align-items: baseline;
+            }
+
+            .brand_wrapper {
+                margin-right: auto;
+            }
+
+            ::slotted([slot="brand"]) {
+                color: pink;
+            }
+
+            ::slotted(a) {
+                text-decoration: none;
+            }
+        </style>
+        <h1 class="brand_wrapper">
+            <slot name="brand"></slot>
+        </h1>
+        <slot name="item"></slot>
+    </template>
+
+    <custom-nav>
+        <a slot="brand" href="/">
+            <img src="/brand.png" alt="logo" />
+            <span>Smart</span>
+        </a>
+        <a slot="item" href="/products">Storefront</a>
+        <a slot="item" href="/about">About Us</a>
+    </custom-nav>
+
+    <script>
+        customElements.define('custom-nav', class extends HTMLElement {
+            connectedCallback() {
+                this.attachShadow({ mode: "open" })
+                this.shadowRoot.append(tmpl.content.cloneNode(true))
+            }
+        });
+    </script>
+</body>
+
+</html>

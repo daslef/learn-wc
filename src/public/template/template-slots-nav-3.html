@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slots</title>
+</head>
+
+<body>
+    <template id="tmpl">
+        <dialog id="dialog">
+            <h2>
+                <slot name="header">Диалоговое окно</slot>
+            </h2>
+            <slot name="content"></slot>
+
+            <form method="dialog">
+                <slot name="close-trigger">
+                    <button id="button-close">Ок</button>
+                </slot>
+            </form>
+        </dialog>
+        <button id="button-open">Открыть</button>
+    </template>
+
+    <custom-dialog>
+        <h2 slot="header">Внимание</h2>
+        <p slot="content">Подтвердите операцию</p>
+    </custom-dialog>
+
+    <script>
+        customElements.define('custom-dialog', class extends HTMLElement {
+            connectedCallback() {
+                this.attachShadow({ mode: "open" })
+                this.shadowRoot.append(tmpl.content.cloneNode(true))
+                this.shadowRoot.querySelector('#button-open').addEventListener('click', () => {
+                    this.shadowRoot.querySelector('#dialog').showModal()
+                })
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -16,19 +16,23 @@ export default defineConfig({
         sidebar: [
             {
                 text: 'Лонгриды', items: [
+                    { text: '1.1 О курсе', link: '/chapter-one/course' },
+                    { text: '1.2 Веб Компоненты', link: '/chapter-one/intro' },
                     {
-                        text: "1. Введение", items: [
-                            { text: '1.1 О курсе', link: '/chapter-one/course' },
-                            { text: '1.2 Веб Компоненты', link: '/chapter-one/intro' },
-                            { text: '1.3 Custom Elements', link: '/chapter-one/custom-elements' },
-                            { text: '1.4 Shadow DOM', link: '/chapter-one/shadow-dom' },
-                            { text: '1.5 HTML Templates', link: '/chapter-one/template' },
-                            { text: '1.6 Slots API', link: '/chapter-one/slots' },
+                        text: "1.3 Пользовательские компоненты", items: [
+                            { text: '1.3.1 Обзор', link: '/chapter-one/custom-elements/overview' },
+                            { text: '1.3.2 Встроенные компоненты', link: '/chapter-one/custom-elements/built-in' },
+                            { text: '1.3.3 Автономные компоненты', link: '/chapter-one/custom-elements/autonomous' },
+                            { text: '1.3.4 Спецификация и примечания', link: '/chapter-one/custom-elements/spec-and-notes' },
                         ]
                     },
+                    { text: '1.4 Shadow DOM', link: '/chapter-one/shadow-dom' },
+                    { text: '1.5 Шаблоны', link: '/chapter-one/template' },
+                    { text: '1.6 Слоты', link: '/chapter-one/slots' },
+                    { text: '1.7 События', link: '/chapter-one/events' },
                     {
                         text: "X. Дополнительные главы", items: [
-                            { text: 'X.1 Shadow DOM', link: '/additional-chapters/shadow-dom' },
+                            { text: 'X.1 Стилизация', link: '/additional-chapters/styling' },
                         ]
                     }
 

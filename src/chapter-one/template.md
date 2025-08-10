@@ -38,7 +38,7 @@ elem.append(tmpl.content.cloneNode(true));
 document.body.append(elem);
 ```
 
-<iframe height="50" src="/template-example-1.html" />
+<iframe height="50" src="/template/template-example-1.html" />
 
 Обратите внимание, что мы обратились к шаблону по его идентификатору. Все шаблоны доступны глобально сразу после парсинга документа браузером, хотя классический способ через `document.querySelector('#tmpl')` также работает.
 
@@ -67,7 +67,7 @@ elem.addEventListener("click", function() {
 })
 ```
 
-<iframe height="50" src="/template-example-2.html" />
+<iframe height="50" src="/template/template-example-2.html" />
 
 Откройте инструменты разработчика, чтобы убедиться, что теневое дерево сформировано.
 
@@ -102,7 +102,7 @@ outer.appendChild(inner.content.cloneNode(true));
 document.querySelector('#host').appendChild(outer);
 ```
 
-<iframe height="150" src="/template-example-5.html" />
+<iframe height="150" src="/template/template-example-5.html" />
 
 ## Альтернативы
 
@@ -124,7 +124,7 @@ document.querySelector('#host').appendChild(outer);
     </script>
 ```
 
-<iframe height="50" src="/template-example-3.html" />
+<iframe height="50" src="/template/template-example-3.html" />
 
 Или через императивное пошаговое создание дерева:
 
@@ -145,6 +145,6 @@ document.querySelector('#host').appendChild(outer);
     </script>
 ```
 
-<iframe height="50" src="/template-example-4.html" />
+<iframe height="50" src="/template/template-example-4.html" />
 
 Первый вариант удобен только для простых примеров, так как лишает нас поддержки IDE и повышает вероятность ошибок. Второй - отнимает много времени. Если команда принципиально отказывается использовать шаблоны, более здоровой альтернативой будет использование JSX либо импорт HTML из документов. Альтернативы будут рассмотрены позднее.
