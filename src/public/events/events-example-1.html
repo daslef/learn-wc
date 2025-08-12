@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events</title>
+</head>
+
+<body>
+    <section class="entry"></section>
+    <script>
+        const sectionElement = document.querySelector('.entry')
+        const shadowRoot = sectionElement.attachShadow({ mode: 'open' });
+        shadowRoot.innerHTML = '<label id="name"><input for="name" /></label><button>Fire!</button>';
+
+        const [labelElement, buttonElement] = shadowRoot.childNodes
+
+        labelElement.addEventListener('test', event => alert('shadow: ' + event.detail));
+        document.addEventListener('test', event => alert('light: ' + event.detail));
+
+        buttonElement.addEventListener('click', () => {
+            labelElement.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true, detail: "composed" }));
+            labelElement.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: false, detail: "not composed" }));
+        })
+    </script>
+</body>
+
+</html>

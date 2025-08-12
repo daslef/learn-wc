@@ -33,11 +33,21 @@ export default defineConfig({
                     {
                         text: "X. Дополнительные главы", items: [
                             { text: 'X.1 Стилизация', link: '/additional-chapters/styling' },
+                            { text: 'X.2 Библиотеки', link: '/additional-chapters/libraries' },
                         ]
                     }
-
                 ]
             },
+            {
+                text: 'Проекты', items: [
+                    {
+                        text: 'Форма', items: [
+                            { text: 'О проекте', link: '/chapter-two/about' },
+                            { text: 'Подготовка окружения', link: '/chapter-two/setup' }
+                        ]
+                    }
+                ]
+            }
         ],
 
         socialLinks: [

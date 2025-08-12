@@ -92,121 +92,27 @@ element.addEventListener("click", event => {
 Для генерации события на элементе используется `dispatchEvent API`: `someElement.dispatchEvent(new CustomEvent('test', { detail: 'additional info', bubbles: true, composed: true }))`
 
 ```html
-<div id="outer"></div>
+<section class="entry"></section>
 <script>
-    outer.attachShadow({mode: 'open'});
-    outer.shadowRoot.innerHTML = 'div';
-    
-    document.addEventListener('test', event => alert(event.detail));
-    inner.dispatchEvent(new CustomEvent('test', {  bubbles: true,  composed: true,  detail: "composed" }));
-    inner.dispatchEvent(new CustomEvent('test', {  bubbles: true,  composed: false,  detail: "not composed" }));
+    const sectionElement = document.querySelector('.entry')
+    const shadowRoot = sectionElement.attachShadow({ mode: 'open' });
+    shadowRoot.innerHTML = '<label id="name"><input for="name" /></label><button>Fire!</button>';
+
+    const [labelElement, buttonElement] = shadowRoot.childNodes
+
+    labelElement.addEventListener('test', event => alert('shadow: ' + event.detail));
+    document.addEventListener('test', event => alert('light: ' + event.detail));
+
+    buttonElement.addEventListener('click', () => {
+        labelElement.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true, detail: "composed" }));
+        labelElement.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: false, detail: "not composed" }));
+    })
 </script>
-
-В этом примере The code shown in Listing 4-4 creates div#inner in the Shadow DOM of div#outer and triggers two events on it. Only the one with composed: true makes it outside to the document.
-
-
-The structure internally looks like this:div(id=outer)  #shadow-dom    div(id=inner)	This is the view of the content in the browser’s developers tools. It shows the Shadow DOM’s boundary.
-
-The dispatchEvent API
-
-In the last example, I used the dispatchEvent API . It dispatches an event on a target. The listeners are invoked synchronously in their appropriate order. The normal event processing rules apply. An outside viewer can’t distinguish between such custom events and those fired by the internal parts of the document. The “event” itself is described by an interface and exists as an instantiable class with the same name. If you work with TypeScript, you have the type and can make instances like this:const evt = new Event("look", {  "bubbles":true,  "cancelable":false});document.dispatchEvent(evt);The options dictionary is of type EventInit, with just the three already-mentioned properties:	bubbles: An optional Boolean indicating whether the event bubbles. The default is false.
-cancelable: An optional Boolean indicating whether the event can be cancelled. The default is false.
-composed: An optional Boolean indicating whether the event will trigger listeners outside of a shadow root. The default is false.The internal events may fire asynchronously and the internal processing will continue while executing the handlers. This is different with custom events fired by dispatchEvent. This method calls blocks and waits for the handlers to execute. Consider using async techniques if you need a different behavior.
-
-In TypeScript, the definition looks like this:interface EventInit {    bubbles?: boolean;    cancelable?: boolean;    composed?: boolean;}interface Event {     readonly bubbles: boolean;    cancelBubble: boolean;    readonly cancelable: boolean;    readonly composed: boolean;    readonly currentTarget: EventTarget | null;    readonly defaultPrevented: boolean;    readonly eventPhase: number;    readonly isTrusted: boolean;    returnValue: boolean;    /** deprecated (only for old browsers) */    readonly srcElement: EventTarget | null;    readonly target: EventTarget | null;    readonly timeStamp: number;    readonly type: string;    composedPath(): EventTarget[];    initEvent(      type: string,      bubbles?: boolean,      cancelable?: boolean): void;    preventDefault(): void;    stopImmediatePropagation(): void;    stopPropagation(): void;    readonly AT_TARGET: number;    readonly BUBBLING_PHASE: number;    readonly CAPTURING_PHASE: number;    readonly NONE: number;}declare var Event: {    prototype: Event;    new(type: string, eventInitDict?: EventInit): Event;    readonly AT_TARGET: number;    readonly BUBBLING_PHASE: number;    readonly CAPTURING_PHASE: number;    readonly NONE: number;};Customize Events
-
-Apart from the common Event interface, there is another type you can use: CustomEvent. Despite the name, you don’t need to use it to fire a custom event, but it’s often helpful to get clearer information about the nature of the event. The only difference is that CustomEvent provides an additional property called detail. This is an object you define on the source and the receiver can get custom data here. The sheer existence clarifies the custom nature of the event. The option is part of the initializer, now named CustomEventInit.// this.process omitted for brevityobj.addEventListener("loop", (e) => { this.process(e.detail) });// create and dispatch the eventvar event = new CustomEvent("loop", {  detail: {    loops: 100  }});obj.dispatchEvent(event);	The CustomEventInit type accepts all properties from EventInit, too.
-In TypeScript, the definition looks like this:interface CustomEventInit<T = any> extends EventInit {    detail?: T;}interface CustomEvent<T = any> extends Event {    readonly detail: T;    initCustomEvent(      typeArg: string,      canBubbleArg: boolean,      cancelableArg: boolean,      detailArg: T): void;}declare var CustomEvent: {    prototype: CustomEvent;    new<T>(      typeArg: string,      eventInitDict?: CustomEventInit<T>): CustomEvent<T>;};	This provides both a type definition and a constructor description.
-Smart Events
-
-
-Adding events requires script work. To make it easier to use, some global code can be helpful. However, this doesn’t change the basic behavior and flow as described before. Events are defined by a special instruction. They are attached to document objects, regardless of usage.
-Events are easy to add directly using a dataset like data-onclick. All JavaScript events are supported this way. Just replace onclick in the example with any other JavaScript event:<button data-on-click="clickId">OK</button>Now, on an applications global start script (see Listing 4-5), attach handlers to anything with such an event definition.document.querySelectorAll('[^data-on-]').forEach(elem => {  const events = elem.dataSet.filter(d => d.startsWidth('on'));  events.forEach(event =>  {    elem.addEventHandler(event, e => {      // global handler      const instruction = e.target.dataSet(event);      // deal with it    });  });});Listing 4-5	Smart Events (chapter4/smart/index.html)
-
-The effect here is, depending on the number of such events, to drastically reduce the amount of code for attaching events. However, it’s not that easy to add similar removeEventHandler calls. The code is more appropriate for a single-page app, where the final state of the code is static and held in memory anyway.
-Summary
-
-
-In this chapter, I explained event handling in the browser, the way to attach events to normal and shadowed Web Components and how to extend the event system. By using custom events, the way components communicate to each other can be easily extended. Some TypeScript definitions show how the objects are built internally. Attaching events globally using the document object shows how to minimize the effort to attach multiple events.
-
-
-<!-- /// -->
-As it is a menu, as a last step you need to add event handlers. That’s not so much different from regular HTML, with just one exception. Attached event handlers are not copied in the clone process. Because slots need templates and templates need cloning, you must attach the events in the component and expose the event.
-
-To expose custom events, you use the API call dispatchEvent like this:
-
-```js
-customElements.define('menu-item', class extends HTMLElement {
-    connectedCallback() {
-        this.attachShadow({ mode: 'open' });
-        this.shadowRoot.innerHTML = `<li>${this.textContent}</li>`;
-        this.shadowRoot.addEventListener('click', (e) => {
-            if (e.target.tagName === 'LI') {
-                console.log(e);
-                this.dispatchEvent(new CustomEvent('menuclick', {
-                    details: e.currentTarget.textContent
-                }));
-            }
-        });
-    }
-});
 ```
 
-The event name is your personal choice. It’s as customizable as any name. If you want to transfer custom data, the class CustomEvent is better than just using Event. This type provides an additional property named detail. The receiving component must also access the content of the slot, not the actual definition. The complete example is written in TypeScript. Due to the types it gives a better understanding.
+<iframe src="/events/events-example-1.html" />
 
-```js
-class MenuItem extends HTMLElement {
-    constructor() {
-        super();
-    }
-    connectedCallback() {
-        this.attachShadow({ mode: 'open' });
-        if (!this.shadowRoot) {
-            return
-        }
+Здесь два пользовательских события вызываются на внутреннем элементе, и снаружи теневого дерева доступно только то, которому выставлен `{ composed: true }`.
 
-        this.shadowRoot.innerHTML = `<li>${this.textContent}</li>`;
-        this.shadowRoot.addEventListener('click', (e: Event) => {
-            if ((e.target as HTMLElement).tagName === 'LI') {
-                console.log(e);
-                const customEvent: CustomEventInit = {
-                    detail: (e.currentTarget as HTMLElement).textContent
-                };
-                this.dispatchEvent(new CustomEvent('menuclick', customEvent));
-            }
-        });
-    }
-}
+Третье свойство, доступное при создании пользовательского события, это `cancelable`, определяющий, может ли событие быть отменено через `preventDefault` (по умолчанию - нет).
 
-class CustomMenu extends HTMLElement {
-    constructor() {
-        super();
-    }
-    connectedCallback() {
-        this.attachShadow({ mode: 'open' });
-        if (this.shadowRoot) {
-            return
-        }
-        this.shadowRoot.innerHTML = `
-            <div>
-                <slot name="title"></slot>
-                <ul>
-                    <slot name="item"></slot>
-                </ul>
-            </div>`;
-        const slot = this.shadowRoot.querySelector<HTMLSlotElement>('slot[name="item"]');
-        if (slot) {
-            slot.assignedNodes().forEach((e: Node) => {
-                e.addEventListener('menuclick', (el: Event) => alert((el as CustomEvent).detail));
-            });
-        }
-    }
-}
-
-customElements.define('menu-item', MenuItem);
-customElements.define('custom-menu', CustomMenu);
-```
-
-In the event receiver, the slot is read by querySelector and the slot’s selector (line 43). This returns an HTMLSlotElement instance. This is the same as HTMLElement with just one exception: the method assignedNodes . That’s the way to access the projected content, the elements that fire the actual event. For all of the nodes, you attach an event handler that receives the custom event.
-
-Custom events work exactly like the standard events, but they provide an additional field detail that can be of type any or a type enforced by a generic. To fire a custom event properly, the type CustomEventInit is the right way (line 14 to 17).
