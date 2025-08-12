@@ -1,4 +1,4 @@
-# Стилизация <card-component>
+# Стилизация `<card-component>`
 
 *Дизайн компонента всё так же доступен в [Figma](https://www.figma.com/file/QXGa6qN6AqgeerCtS28I8z/Web-Components-Book-Design-Library?node-id=331%3A24)*
 

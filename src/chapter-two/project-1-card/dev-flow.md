@@ -1,4 +1,4 @@
-# Компонент <card-component>
+# Компонент `<card-component>`
 
 ## Флоу разработки
 
@@ -8,9 +8,9 @@
 
 Создадим директорию `src/lib/component/hello`, а в ней два файла: `Hello.ts` и `Hello.stories.ts`.
 
-Для тестирования связки реализации и стори создадим в `Hello.ts` игрушечный компонент <hello-component>
+Для тестирования связки реализации и стори создадим в `Hello.ts` игрушечный компонент `<hello-component>`
 
-```js
+```ts
 export class CardComponent extends HTMLElement {
     constructor() {
         super();

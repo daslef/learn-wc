@@ -41,7 +41,19 @@ export default defineConfig({
             {
                 text: 'Проекты', items: [
                     {
-                        text: 'Форма', items: [
+                        text: 'Card', items: [
+                            { text: 'О проекте', link: '/chapter-two/project-1-card/about' },
+                            { text: 'Подготовка окружения', link: '/chapter-two/project-1-card/setup' },
+                            { text: 'Флоу', link: '/chapter-two/project-1-card/dev-flow' },
+                            { text: 'Имплементация', link: '/chapter-two/project-1-card/implementation' },
+                            { text: 'Контролы', link: '/chapter-two/project-1-card/controls' },
+                            { text: 'Стилизация', link: '/chapter-two/project-1-card/styling' },
+                            { text: 'Тестирование', link: '/chapter-two/project-1-card/testing' },
+                            { text: 'Итоги', link: '/chapter-two/project-1-card/summary' },
+                        ]
+                    },
+                    {
+                        text: 'Form', items: [
                             { text: 'О проекте', link: '/chapter-two/about' },
                             { text: 'Подготовка окружения', link: '/chapter-two/setup' }
                         ]

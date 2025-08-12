@@ -1,4 +1,4 @@
-# Компонент <card-component>
+# Компонент `<card-component>`
 
 ## Контролы
 
