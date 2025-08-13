@@ -4,34 +4,43 @@
 
 Для начала предоставим наружу метод интерфейса `ElementInternals` для проверки валидности: `checkValidity`. Метод проверяет значение на заданные ограничения и в случае обнаружения нарушений вызывает событие о невалидности и возвращает `false`.
 
-```ts
-checkValidity() {
-    return this.internals.checkValidity();
-}
-```
-
 Метод `reportValidity` очень похож на него, но помимо прочего возвращает *validationMessage* для отображения.
 
 ```ts
-reportValidity() {
-    return this.internals.reportValidity();
+// src/lib/components/input-text/TextInput.ts
+
+export class TextInputComponent extends HTMLElement {
+    // ...
+
+    checkValidity() {
+        return this.internals.checkValidity();
+    }
+
+    reportValidity() {
+        return this.internals.reportValidity();
+    }
+
+    // ...
 }
 ```
 
 Геттер `validity` возвращает объект `ValidationState`, который включает в себя свойства, описывающие распространенные ошибки валидации, такие как *tooShort*, *valueMissing* и  *patternMismatch*. Этот объект обновляется при вызовах `setValidity` и `reportValidity`.
 
-
-```ts
-get validity() {
-    return this.internals.validity;
-}
-```
-
 Следующий геттер, `validationMessages`, возвращает сообщения, соответствующие каждому из невалидных состояний элемента.
 
 ```ts
-get validationMessage() {
-    return this.internals.validationMessage;
+// src/lib/components/input-text/TextInput.ts
+
+export class TextInputComponent extends HTMLElement {
+    // ...
+    get validity() {
+        return this.internals.validity;
+    }
+
+    get validationMessage() {
+        return this.internals.validationMessage;
+    }
+    // ...
 }
 ```
 
@@ -46,57 +55,39 @@ get validationMessage() {
 Добавим его в наш класс
 
 ```ts
-setValidity(
-    flags: ValidityStateFlags,
-    message?: string,
-    anchor?: HTMLElement
-): void {
-    this.internals.setValidity(flags, message, anchor);
+// src/lib/components/input-text/TextInput.ts
+
+export class TextInputComponent extends HTMLElement {
+    // ...
+
+    setValidity(
+        flags: ValidityStateFlags,
+        message?: string,
+        anchor?: HTMLElement
+    ): void {
+        this.internals.setValidity(flags, message, anchor);
+    }
+
+    // ...
 }
 ```
+
+## Прослушивание триггерного события
 
 Согласно требованиям, мы должны проверять валидность значения в тот момент, когда пользователь перемещает фокус с элемента, т.е. вызывает событие *blur*.
 
-```ts
-if (input.value && input.value.length > 0) {
-    input.setValidity(
-        { valueMissing: true },
-        "Error: This field is required, Please type in a value."
-    );
-}
-```
+Реагируя на него, мы должны проверить наличие значения в поле ввода (если оно является обязательным), и что длина этой строки больше нуля. Если одно из правил не соблюдается, мы вызовем `setValidity` и передадим в него два аргумента: один для браузера и разработчика, второй для пользователя.
 
-Здесь первый аргумент - это сообщение для браузера (и разработчика), а второй - для пользователя.
-
-Осталось решить, где реализовать прослушивание этого события и реакцию на него. Можно сделать это внутри самого `TextInputComponent`:
-
-```ts
-this.$input.addEventListener("blur", () => {
-    if (
-        this.getAttribute("required") &&
-        this.$input.value &&
-        this.$input.value.length > 0
-    ) {
-        this.setValidity(
-            { valueMissing: true },
-            "Error: This field is required, Please type in a value."
-        );
-    }
-});
-```
-
-В коллбэке `onValidate` мы можем проверить наличие атрибута *required*, и если он установлен, то проверить существование значения и его длину. Если условие вернет ложь, мы сможем выставить `setValidity` с флагом `valueMissing` и передать пользователю сообщение.
-
-Единственный недостаток такого подхода - что проверки теперь зашиты в компонент, и пользователям компонента будет непросто их перезадать и расширить для использования в новых сценариях.
+Осталось решить, где реализовать прослушивание этого события и реакцию на него. Можно сделать это внутри самого `TextInputComponent`. Единственный недостаток такого подхода - что проверки теперь зашиты в компонент, и пользователям компонента будет непросто их перезадать и расширить для использования в новых сценариях.
 
 Решение - вынести условия из уровня компонента на уровень приложения. Главное - чтобы компонент обрабатывал вызовы `setValidity`.
 
-## Пишем интерфейс Validator
+## Validator
 
-Создадим в той же директории файл `validator.ts`, в котором опишем API для валидации нашего компонента, на которое смогут опираться пользователи (разработчики).
+Опишем тип нашего будущего валидатора в `types.ts`.
 
 ```ts
-// src/lib/components/TextInput/validator.ts
+// src/lib/components/input-text/types.ts
 
 export type Validator = {
     validations: {
@@ -109,57 +100,241 @@ export type Validator = {
 
 На данный момент `Validator` содержит лишь одно свойство, `validations`: массив объектов с флагом для браузера, проверкой и сообщением для пользователя.
 
-## Принимаем validator в TextInputComponent
-
-Импортируем созданный тип и зададим в классе `TextInputComponent` новое публичное свойство `validator`
+Также создадим композитный тип для хранения отображения имен наших пользовательских элементов (как и у обычных полей ввода, наш элемент будет ожидать задания атрибута *name*) на объекты типа *Validator*.
 
 ```ts
-public validator: Validator;
+// src/lib/components/input-text/types.ts
+
+export type Validator = {
+    validations: {
+        flag: ValidityStateFlags;
+        condition: (elem: HTMLElement) => boolean;
+        message?: string;
+    }[];
+};
+
+export type ValidatorsMapping = {
+    [K: string]: Validator
+}
+
 ```
 
-Наконец, определим новый геттер `input`, возвращающий вложенный `HTMLInputElement`.
+Импортируем созданный тип и зададим в классе `TextInputComponent` новое публичное свойство `validator`. Изначально оно неизвестно, поэтому дадим ему возможность быть *nullable*.
 
 ```ts
-get input(): HTMLInputElement {
-    return this.shadowRoot.querySelector("input");
+// src/lib/components/input-text/TextInput.ts
+
+import type { Validator } from "./types";
+
+export class TextInputComponent extends HTMLElement {
+    // ...
+    public validator: Validator | null = null;
+    // ...
 }
 ```
 
-## Используем Validator в Storybook
-
-В `TextInput.stories.ts` импортируем созданный тип и определим объект, в которым зададим валидатор для имени пользователя.
+Наконец, определим новый геттер `input`, возвращающий вложенный `HTMLInputElement`. Мы уверены в наличии теневого дерева и вложенного поля ввода, поэтому используем *!*.
 
 ```ts
-// src/lib/components/TextInput/TextInput.stories.ts
+// src/lib/components/input-text/TextInput.ts
 
-import { type Validator } from './validator'
+export class TextInputComponent extends HTMLElement {
+    // ...
 
-const validators: { [ K extends string ] : Validator } = {
+    get input(): HTMLInputElement {
+        return this.shadowRoot!.querySelector("input")!;
+    }
+
+    // ...
+}
+```
+
+В `TextInput.stories.ts` импортируем созданные типы и определим объект, в которым зададим валидатор для имени пользователя.
+
+```ts
+// src/lib/components/input-text/TextInput.stories.ts
+
+import { html } from "lit-html";
+import { TextInputComponent } from "./TextInput";
+import type { Validator, ValidatorsMapping } from './types'
+
+const validators: ValidatorsMapping = {
     username: {
         validations: [
             {
                 flag: { valueMissing: true },
                 message: "Error: Required",
-                condition: (input) => input.required && input.value.length <= 0,
+                condition: (input) => input.required && input.value.length === 0,
             },
         ],
     },
 };
+
+export const Primary = {}
+
+export default {
+  title: "Components/Inputs/TextInput",
+  component: "input-text",
+  render: () => html`<form><input-text></input-text></form>`
+}
 ```
 
-Идеально, если для задания правил пользователю не потребуется использовать JS, и он мог бы просто задать атрибут в HTML.
+## Уточнение типов
 
-<form><text-input name="username"></text-input></form>
+Если ваш IDE работает корректно, то после этого действия функция *condition* должна подсветиться: TypeScript сомневается, что у нашего элемента, расширяющего `HTMLElement`, присутствуют свойства *required* и *value*.
 
-Запросим это значение в описании шаблона (таймаут нужен чтобы шаблон успел скомпилироваться) и зададим свойств `validator` опираясь на значение атрибута `name`.
+Для *value* напишем геттер, обращающийся к аналогичному свойству внутри вложенного поля ввода.
+
+Зададим геттер и сеттер для *required*, это позволит нам задавать его программным путем (не через HTML-атрибут).
 
 ```ts
-const PrimaryTemplate = ({}) => {
-    setTimeout(() => {
-        const input = document.querySelector(`[name="username"]`);
-        input.$validator = validators["username"];
-    }, 0);
+// src/lib/components/input-text/TextInput.ts
+import type { Validator } from "./types";
 
-    return html`<form><text-input name="username"></text-input></form>`;
-};
+export class TextInputComponent extends HTMLElement {
+    // ...
+    get value(): string {
+        return this.input?.value!;
+    }
+
+    get required(): boolean {
+        return this.input?.required!;
+    }
+
+    set required(value: boolean | string) {
+        if (String(value) === "true") {
+            this.input?.setAttribute("required", "true");
+        }
+
+        if (String(value) === "false") {
+            this.input?.removeAttribute("required");
+        }
+    }
+    // ...
+}
+
+customElements.define('input-text', TextInputComponent)
 ```
+
+Вроде написали, но IDE всё равно не убедили. Время написать тип для нашего элемента `<input-text>`.
+
+```ts
+// src/lib/components/input-text/types.ts
+
+// ...
+
+export type TextInputInterface = HTMLElement & Pick<HTMLInputElement, 'value' | 'required'>
+```
+
+На и наконец изменим в том же файле сигнатуру свойства *condition*, из-за которой эта ошибка и возникла:
+
+```ts
+// src/lib/components/input-text/types.ts
+
+export type Validator = {
+  validations: {
+    flag: ValidityStateFlags;
+    condition: (elem: TextInputInterface) => boolean;
+    message?: string;
+  }[];
+};
+
+// ...
+```
+
+Проблема решена.
+
+## Привязка правил валидации
+
+Чтобы привязать правила валидации, нам нужно задать полю ввода имя *username*. Добавим его в функцию рендера.
+
+```ts
+// src/lib/components/input-text/TextInput.stories.ts
+
+// ...
+export default {
+  title: "Components/Inputs/TextInput",
+  component: "input-text",
+  render: () => html`<form><input-text name="username"></input-text></form>`
+}
+```
+
+Наши следующие шаги:
+- обратиться к элементу селектором по наличию атрибута *name*,
+- узнать значение этого атрибута (здесь мы его знаем изначально, но делаем на будущее),
+- обратиться по значению атрибута к объекту *validators* и получить соответствующий *Validator*,
+- задать этот валидатор свойству *validator* нашего элемента.
+
+Все эти программные действия можно описать в стори
+
+```ts
+// src/lib/components/input-text/TextInput.stories.ts
+
+// ...
+
+import type { Validator, ValidatorsMapping, TextInputInterface } from './types'
+
+// ...
+
+export const Primary = {
+    play: () => {
+        const element: TextInputInterface = document.querySelector("input-text[name]")!;
+        const elementName = element.getAttribute("name")!
+        element.validator = validators[elementName];
+        console.log(element.validator)
+
+        for (const rule of element.validator.validations) {
+            if (rule.condition(element)) {
+                console.log(rule.message)
+            }
+        }
+    }
+}
+
+// ...
+```
+
+Вновь требуется поправить тип `TextInputInterface`, на этот раз добавить свойство *validator*
+
+```ts
+// src/lib/components/input-text/types.ts
+
+// ...
+
+export type TextInputInterface = HTMLElement & Pick<HTMLInputElement, 'value' | 'required'> & { validator: Validator }
+```
+
+Если всё сделано правильно, в консоли инструментов разработчика выведется прикрепленный валидатор. Но мы также ожидали сообщение об ошибке - его нет, так как в правиле сказано `input.required && input.value.length === 0`, а у нашего элемента *required* не выставлен.
+
+Выставим его программно
+
+```ts
+// src/lib/components/input-text/TextInput.stories.ts
+
+// ...
+
+export const Primary = {
+    play: () => {
+        const element: TextInputInterface = document.querySelector("input-text[name]")!;
+        const elementName = element.getAttribute("name")!
+        element.validator = validators[elementName];
+        console.log(element.validator)
+
+        element.required = true
+
+        for (const rule of element.validator.validations) {
+            if (rule.condition(element)) {
+                console.log(rule.message)
+            }
+        }
+    }
+}
+
+// ...
+```
+
+В консоли должно появиться сообщение об ошибке, т.к. атрибут *required* теперь задан, а длина строки внутри поля ввода при старте равна нулю.
+
+Валидаторы прикреплены, но работают пока только через стори и не коммуницируют с формой. Мы продолжим работу над ними позже.
+
+А пока - сделаем так, чтобы свойство *required* (и подобные ему) можно было задавать не только программно через JS, но и декларативно через HTML-атрибуты.

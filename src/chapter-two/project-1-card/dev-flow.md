@@ -11,7 +11,7 @@
 Для тестирования связки реализации и стори создадим в `Hello.ts` игрушечный компонент `<hello-component>`
 
 ```ts
-export class CardComponent extends HTMLElement {
+export class HelloComponent extends HTMLElement {
     constructor() {
         super();
     }
@@ -42,41 +42,41 @@ customElements.define('hello-component', HelloComponent);
 ```ts
 import { HelloComponent } from "./Hello";
 
+export const Hello = {}
+
 export default {
-    title: "Components/Hello",
-};
+  title: "Components/HelloComponent",
+  render: () => `<hello-component></hello-component>`,
+}
 ```
 
-Storybook отслеживает файлы `*.stories.{(j|t)s}`, экспортирующие объект, описанный в соответствии с *Component Story Format*. Свойство *title*, заданное через слэш, будет отрисовано в боковой панели навигации Storybook как список `Components` с вложенной директорией `Hello` - такой подход помогает структурировать компоненты.
+Storybook отслеживает файлы `*.stories.{(j|t)s}`, экспортирующие объект, описанный в соответствии с *Component Story Format*.
 
-Помимо экспорта по умолчанию с настройками стори мы делаем один или несколько именованных экспортов с самими стори.
+В этом объекте пока лишь два свойства, так как компонент простой:
 
-Для начала зададим Storybook-шаблон. Это всего лишь функция, возвращающая разметку. В нашем случае, она должна вернуть `<hello-component>`.
+- свойство *title*, заданное через слэш, будет отрисовано в боковой панели навигации Storybook как список `Components` с вложенной директорией `HelloComponent` - такой подход помогает структурировать компоненты.
 
-```js
-const PrimaryTemplate = () => `<hello-component></hello-component>`;
-```
+- свойство *render* - функция, возвращающая разметку для отрисовки. В нашем случае, она должна вернуть `<hello-component>`. Позже мы будем передавать в нее аргументы для более тонкой настройки под различные динамические стори.
 
-Теперь делаем именованный экспорт `HelloComponent` на основе `PrimaryTemplate`.
+Сама стори здесь именуется *Hello*. Фигурные скобки определяют объект с настройками, передаваемыми в стори. Здесь он пустой, так как компонент не настраиваемый, но далее мы начнем передавать туда значения. Важно экспортировать его, чтобы `Storybook` добавил стори в каталог.
 
-```js
-export const HelloStory = PrimaryTemplate.bind({});
-```
-
-Фигурные скобки определяют объект с настройками, передаваемыми в стори. Здесь он пустой, так как компонент не настраиваемый, но далее мы начнем передавать туда значения.
+Добавим типизацию:
+- импортируем типы *Meta* и *StoryObj* из модуля, реализующего отображение Веб Компонентов;
+- добавим тип *StoryObj* для переменной *Hello*,
+- и проверим, что наши настройки удовлетворяют типу *Meta*
 
 Итоговый код `Hello.stories.ts`
 
 ```ts
+import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import { HelloComponent } from "./Hello";
 
-const PrimaryTemplate = () => `<hello-component></hello-component>`;
-
-export const HelloStory = PrimaryTemplate.bind({});
+export const Hello: StoryObj<{}> = {}
 
 export default {
-    title: "Components/HelloComponent",
-};
+  title: "Components/HelloComponent",
+  render: () => `<hello-component></hello-component>`,
+} satisfies Meta<{}>
 ```
 
-В браузере перейдем по `http://localhost:6006/`, откроем директорию `Components`, выберем `HelloComponent`. Должен отобразиться "Hello World"
+В браузере перейдем по `http://localhost:6006/`, откроем директорию `HelloComponent`, выберем `Hello`. Должен отобразиться "Hello World"

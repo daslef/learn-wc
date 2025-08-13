@@ -5,7 +5,7 @@
 После предыдущего шага мы остановились на следующей реализации
 
 ```ts
-// src/lib/components/TextInput/TextInput.ts
+// src/lib/components/input-text/TextInput.ts
 
 export class TextInputComponent extends HTMLElement {
     constructor() {
@@ -29,7 +29,7 @@ customElements.define('input-text', TextInputComponent)
 
 
 ```ts
-// src/lib/components/TextInput/TextInput.ts
+// src/lib/components/input-text/TextInput.ts
 
 export class TextInputComponent extends HTMLElement {
     constructor() {

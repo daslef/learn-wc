@@ -4,14 +4,15 @@
 
 Можно взять за основу исходную версию репозитория либо его состояние после выполнения проекта `<card-component>`.
 
-Создайте директорию `src/lib/components/TextInput` и два файла:
+Создайте директорию `src/lib/components/input-text` и три файла:
 - `TextInput.ts`,
-- `TextInput.stories.ts`.
+- `TextInput.stories.ts`,
+- `types.ts`.
 
-Наполните содержимым для проверки связки со `Storybook`
+Наполните их содержимым для проверки связки со `Storybook`
 
 ```ts
-// src/lib/components/TextInput/TextInput.ts
+// src/lib/components/input-text/TextInput.ts
 
 export class TextInputComponent extends HTMLElement {
     constructor() {
@@ -24,19 +25,17 @@ customElements.define('input-text', TextInputComponent)
 ```
 
 ```ts
-// src/lib/components/TextInput/TextInput.stories.ts
+// src/lib/components/input-text/TextInput.stories.ts
 
 import { html } from "lit-html";
 import { TextInputComponent } from "./TextInput";
 
-const PrimaryTemplate = ({}) =>
-    html`<form><input-text></input-text></form>`;
-
-export const Primary = PrimaryTemplate.bind({});
+export const Primary = {}
 
 export default {
     title: "Components/Inputs/TextInput",
     component: "input-text",
+    render: () => html`<form><input-text></input-text></form>`
 }
 ```
 

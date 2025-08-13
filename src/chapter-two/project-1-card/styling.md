@@ -27,7 +27,7 @@
 
 В соответствием с макетом Figma, внешний контейнер элемента должен иметь цветной фон, сглаженные углы, тень, и быть ограниченным максимальной шириной в 320px. Для стилизации контейнера (самого хостового элемента `<card-component>`) используется псевдоселектор `:host`. Он работает только внутри теневого DOM и выбирает хостовой элемент.
 
-Начнем вести стилизацию внутри шаблона.
+Начнем вести стилизацию внутри шаблона
 
 ```ts
 // src/lib/component/card/Card.ts
@@ -90,7 +90,7 @@ a:link, a:visited {
 Второй расположим внутри компонента, чтобы он дополнял эти правила блочным отображением.
 
 ```ts
-/* src/lib/components/Card/Card.ts */
+/* src/lib/components/card/Card.ts */
 
 // ...
     template.innerHTML = `
@@ -117,7 +117,7 @@ a:link, a:visited {
 Далее, по дизайн-макету видно, что контент внутри слотов имеет горизонтальный паддинг. Если мы назначим его на элементы `<header>`, `<section>` и `<footer>`, это не даст изображениям занять полную ширину, поэтому зададим его также через ::slotted. Чтобы обратиться ко всем слоттед-элементам, используем селектор `*`, означающий "все".
 
 ```ts
-/* src/lib/components/Card/Card.ts */
+/* src/lib/components/card/Card.ts */
 
 // ...
     template.innerHTML = `
@@ -136,7 +136,7 @@ a:link, a:visited {
 There seems to be a margin below the last element in the card. Target the last slotted element with the :last-child pseudo selector and apply the margin specified in Figma using a CSS variable.
 
 ```ts
-/* src/lib/components/Card/Card.ts */
+/* src/lib/components/card/Card.ts */
 
 // ...
     template.innerHTML = `
@@ -154,7 +154,7 @@ There seems to be a margin below the last element in the card. Target the last s
 Наконец, стилизуем изображения: сбросим внутренние отступы и настроим ширину на 100%
 
 ```ts
-/* src/lib/components/Card/Card.ts */
+/* src/lib/components/card/Card.ts */
 
 // ...
     template.innerHTML = `
@@ -171,8 +171,8 @@ There seems to be a margin below the last element in the card. Target the last s
 // ...
 ```
 
-Если всё сделано правильно, компонент должен выглядеть примерно так
+Если всё сделано правильно, компонент должен выглядеть примерно так:
 
 ![card-3](../../assets/card-3.jpg)
 
-Итак, мы стилизовали компонент используя CSS-переменные, которые доступны как в обычном DOM, так и в теневом, стилизовали хостовой компонент через :host, слоттед-элементы - через :slotted. На этом реализация компонента почти завершена.
+Итак, мы стилизовали компонент используя CSS-переменные, которые доступны как в обычном DOM, так и в теневом, стилизовали хостовой компонент через *:host*, слоттед-элементы - через *:slotted*. На этом реализация компонента почти завершена.

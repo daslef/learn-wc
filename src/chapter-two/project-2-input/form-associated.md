@@ -15,10 +15,12 @@
 Чтобы получить доступ к `ElementInternals`, нужно выставить свойство `formAssociated` в классе пользовательского элемента и вызвать метод `attachInternals()`. После этого такой пользовательский элемент называют *form-associated*, связанным с формой.
 
 ```ts
-// src/lib/components/TextInput/TextInput.ts
+// src/lib/components/input-text/TextInput.ts
 
 export class TextInputComponent extends HTMLElement {
     static formAssociated = true;
+
+    // @ts-ignore
     private internals: ElementInternals;
 
     constructor() {

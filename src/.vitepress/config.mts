@@ -43,13 +43,27 @@ export default defineConfig({
                     {
                         text: 'Card', items: [
                             { text: 'О проекте', link: '/chapter-two/project-1-card/about' },
-                            { text: 'Подготовка окружения', link: '/chapter-two/project-1-card/setup' },
                             { text: 'Флоу', link: '/chapter-two/project-1-card/dev-flow' },
                             { text: 'Имплементация', link: '/chapter-two/project-1-card/implementation' },
                             { text: 'Контролы', link: '/chapter-two/project-1-card/controls' },
                             { text: 'Стилизация', link: '/chapter-two/project-1-card/styling' },
                             { text: 'Тестирование', link: '/chapter-two/project-1-card/testing' },
                             { text: 'Итоги', link: '/chapter-two/project-1-card/summary' },
+                        ]
+                    },
+                    {
+                        text: 'Input', items: [
+                            { text: 'О проекте', link: '/chapter-two/project-2-input/about' },
+                            { text: 'Подготовка окружения', link: '/chapter-two/project-2-input/setup' },
+                            { text: 'Базовая структура', link: '/chapter-two/project-2-input/basic-structure' },
+                            { text: 'Связь с формой', link: '/chapter-two/project-2-input/form-associated' },
+                            { text: 'Валидация', link: '/chapter-two/project-2-input/validation' },
+                            { text: 'Отслеживание атрибутов', link: '/chapter-two/project-2-input/listening' },
+                            { text: 'Валидация #2', link: '/chapter-two/project-2-input/validation-2' },
+                            { text: 'Альтернативные состояния', link: '/chapter-two/project-2-input/disabled-state' },
+                            { text: 'Стилизация', link: '/chapter-two/project-2-input/styling' },
+                            // { text: 'Тестирование', link: '/chapter-two/project-2-input/testing' },
+                            // { text: 'Итоги', link: '/chapter-two/project-2-input/summary' },
                         ]
                     },
                     {

@@ -33,21 +33,21 @@ customElements.define('card-component', CardComponent);
 
 import { CardComponent } from "./Card";
 
-const PrimaryTemplate = () => `<card-component></card-component>`;
-
-export const Card = PrimaryTemplate.bind({});
+export const Card = {};
 
 export default {
     title: "Components/CardComponent",
+    render: () => `<card-component></card-component>`
 };
 ```
+
+Элемент отрисуется в *Storybook*, но пока он не наполнен содержимым, поэтому его трудно заметить.
 
 ## Вспоминаем слоты
 
 Судя по макету, от нас ожидается возможность динамического задания хедера, контента и футера.
 
-Веб Компоненты позволяют использовать Slots API для встраивания различного контента в слоты шаблонов. Напомним особенность, что
-контент, настраиваемый для размещения в слоте, остается доступным через обычный DOM (за исключением глубоко вложенных слотов).
+Веб Компоненты позволяют использовать `Slots API` для встраивания различного контента в слоты шаблонов. Напомним особенность, что контент, настраиваемый для размещения в слоте, остается доступным через обычный DOM (за исключением глубоко вложенных слотов).
 
 Наиболее подходящие семантические элементы для реализации макета - это `<header>`, `<section>` и `<footer>`, упакованные в `<article>`. Задав соответствующие слоты, мы обеспечим возможность их динамического наполнения.
 
@@ -81,13 +81,15 @@ customElements.define('card-component', CardComponent);
 // src/lib/component/card/Card.stories.ts
 
 // ...
-const PrimaryTemplate = () => `
-    <card-component>
-        <h4 slot="header">Food</h4>
-        <p slot="content">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-        <a href="#" slot="footer">Read</a>
-    </card-component>`;
-// ...
+export default {
+    title: "Components/CardComponent",
+    render: () => `
+        <card-component>
+            <h4 slot="header">Food</h4>
+            <p slot="content">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            <a href="#" slot="footer">Read</a>
+        </card-component>`
+};
 ```
 
 Проверьте отображение в `Storybook`.
@@ -98,15 +100,17 @@ const PrimaryTemplate = () => `
 // src/lib/component/card/Card.stories.ts
 
 // ...
-const PrimaryTemplate = () => `
-    <card-component>
-        <img
-            slot="header"
-3	        src="https://images.unsplash.com/photo-1612392167062-8f\ 4 76710986ba?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8f\ 5 Hx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-        />
-        <h4 slot="header">Food</h4>
-        <p slot="content">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-        <a href="#" slot="footer">Read</a>
-    </card-component>`;
-// ...
+export default {
+    title: "Components/CardComponent",
+    render: () => `
+        <card-component>
+            <img
+                slot="header"
+    	        src="https://images.unsplash.com/photo-1612392167062-8f76710986ba?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+            />
+            <h4 slot="header">Food</h4>
+            <p slot="content">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            <a href="#" slot="footer">Read</a>
+        </card-component>`
+};
 ```
