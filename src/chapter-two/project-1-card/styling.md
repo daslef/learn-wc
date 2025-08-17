@@ -133,7 +133,7 @@ a:link, a:visited {
 // ...
 ```
 
-There seems to be a margin below the last element in the card. Target the last slotted element with the :last-child pseudo selector and apply the margin specified in Figma using a CSS variable.
+У последнего слоттед-элемента перезададим внешний нижний отступ согласно макету
 
 ```ts
 /* src/lib/components/card/Card.ts */
