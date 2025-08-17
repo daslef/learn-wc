@@ -61,8 +61,20 @@ export default defineConfig({
                             { text: 'Отслеживание атрибутов', link: '/chapter-two/project-2-input/listening' },
                             { text: 'Валидация #2', link: '/chapter-two/project-2-input/validation-2' },
                             { text: 'Альтернативные состояния', link: '/chapter-two/project-2-input/disabled-state' },
-                            { text: 'Стилизация', link: '/chapter-two/project-2-input/styling' },
-                            // { text: 'Тестирование', link: '/chapter-two/project-2-input/testing' },
+                            {
+                                text: "Стилизация и стори", items: [
+                                    { text: 'Стилизация', link: '/chapter-two/project-2-input/styling-and-stories/styling' },
+                                    { text: 'Стори', link: '/chapter-two/project-2-input/styling-and-stories/stories' },
+                                    { text: 'Практическое задание', link: '/chapter-two/project-2-input/styling-and-stories/task' },
+                                ]
+                            },
+                            {
+                                text: "Тестирование и документирование", items: [
+                                    // { text: 'Тестирование', link: '/chapter-two/project-2-input/tests-and-docs/testing' },
+                                    // { text: 'Документирование', link: '/chapter-two/project-2-input/tests-and-docs/documenting' },
+                                    // { text: 'Практическое задание', link: '/chapter-two/project-2-input/tests-and-docs/task' },
+                                ]
+                            }
                             // { text: 'Итоги', link: '/chapter-two/project-2-input/summary' },
                         ]
                     },

@@ -179,13 +179,17 @@ export default {
 }
 ```
 
-## Уточнение типов
+## Свойства *required* и *value*
 
-Если ваш IDE работает корректно, то после этого действия функция *condition* должна подсветиться: TypeScript сомневается, что у нашего элемента, расширяющего `HTMLElement`, присутствуют свойства *required* и *value*.
+Если ваш IDE работает корректно, то после этого действия функция *condition* должна подсветиться: TypeScript сомневается, что у нашего элемента, расширяющего `HTMLElement`, присутствуют свойства *required* и *value*. И действительно, сейчас они не объявлены.
 
-Для *value* напишем геттер, обращающийся к аналогичному свойству внутри вложенного поля ввода.
+Тут возникает классический вопрос об источнике правды для состояния элемента: с точки зрения пользователя, он взаимодействует с полем ввода, но логика работы поля ввода упакована в наш пользовательский элемент.
 
-Зададим геттер и сеттер для *required*, это позволит нам задавать его программным путем (не через HTML-атрибут).
+Чтобы разрабатываемые нами элементы были удобны в переиспользовании, важно предоставить удобное API наружу. Одно из решений - считать единым источником правды элемент `HTMLInputElement`, дав возможность запросам проходить сквозь `TextInputComponent`, открывая доступ к свойствам поля ввода через геттеры и сеттеры `HTMLInputElement`.
+
+Итак, будем реализовывать идею коммуникации "сквозь" пользовательский элемент к вложенному полю ввода. Поэтому и в сеттерах, и в геттерах мы просто передаем или запрашиваем свойства у поля ввода.
+
+В случае сеттера для *required* важно провести корректную конверсию типов: в HTML этот атрибут задается в формате строки, но его состояние в JS описывается логическим типом.
 
 ```ts
 // src/lib/components/input-text/TextInput.ts
@@ -194,20 +198,24 @@ import type { Validator } from "./types";
 export class TextInputComponent extends HTMLElement {
     // ...
     get value(): string {
-        return this.input?.value!;
+        return this.input.value;
+    }
+
+    set(value: string) {
+        return this.input.value = value
     }
 
     get required(): boolean {
-        return this.input?.required!;
+        return this.input.required;
     }
 
     set required(value: boolean | string) {
         if (String(value) === "true") {
-            this.input?.setAttribute("required", "true");
+            this.input.setAttribute("required", "required");
         }
 
         if (String(value) === "false") {
-            this.input?.removeAttribute("required");
+            this.input.removeAttribute("required");
         }
     }
     // ...

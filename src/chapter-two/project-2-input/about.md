@@ -20,7 +20,7 @@
 
 ## Требования к приемке
 
-- класс `TextInputComponent` экспортирован из `src/lib/components/TextInput/TextInput.ts`;
+- класс `TextInputComponent` экспортирован из `src/lib/components/input-text/TextInput.ts`;
 - `TextInputComponent` стилизован согласно макетам [Figma](https://www.figma.com/file/QXGa6qN6AqgeerCtS28I8z/Web-Components-Book-Design-Library?node-id=324%3A101);
 - `TextInputComponent` поддерживает часть атрибутов `HTMLInputElement`;
 - реализованы стори для отображения поведения компонента в следующих состояниях: по умолчанию, фокус, отключен, ошибка;
