@@ -102,11 +102,10 @@ export default defineConfig({
                             { text: 'Декоратор @Component', link: '/chapter-two/project-4-library/class-decorator' },
                             { text: 'Функция attachShadow', link: '/chapter-two/project-4-library/attach-shadow' },
                             { text: 'Практическое задание 1', link: '/chapter-two/project-4-library/task-1' },
-                            { text: 'Встроенные элементы', link: '/chapter-two/project-4-library/custom-builtins' },
+                            { text: 'Встроенные элементы и стили', link: '/chapter-two/project-4-library/custom-builtins' },
+                            { text: 'Шаблоны и тэг-литералы', link: '/chapter-two/project-4-library/attach-template' },
                             { text: 'Практическое задание 2', link: '/chapter-two/project-4-library/task-2' },
-                            { text: 'Функция attachTemplate', link: '/chapter-two/project-4-library/attach-template' },
-                            { text: 'Декоратор @Listen', link: '/chapter-two/project-4-library/listen-decorator' },
-                            { text: 'Практическое задание 3', link: '/chapter-two/project-4-library/task-3' },
+                            { text: 'Итоги', link: '/chapter-two/project-4-library/summary' },
                         ]
                     }
                 ]

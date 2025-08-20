@@ -73,7 +73,7 @@ class MyComponent extends HTMLElement {
 
 ## Требования к приемке
 
-- экспортированы декораторы *Component* и *Listen*,
+- экспортирован декоратор *Component*
 - экспортированы функции *html*, *css*, *attachShadow*, *attachStyle* и *attachTemplate*,
 - компоненты *ButtonComponent* и *CardComponent* отрефакторены с использованием библиотеки,
 - все тесты проходят.
